@@ -1,5 +1,5 @@
 require('dotenv').config();
-const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5176'];
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:5176','https://yadnyeshkolte.github.io'];
 
 const express = require('express');
 const cors = require('cors');
