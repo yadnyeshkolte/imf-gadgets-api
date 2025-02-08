@@ -34,8 +34,6 @@ app.use('/gadgets', gadgetRoutes);
 
 const PORT = process.env.PORT || 3000;
 
-const PORT = process.env.PORT || 3000;
-
 async function startServer() {
     try {
         await sequelize.sync();
