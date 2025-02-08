@@ -2,6 +2,7 @@ const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const Gadget = require('../models/gadget');
 const auth = require('../middleware/auth');
+const { Op } = require('sequelize');
 const router = express.Router();
 
 function generateCodename() {
@@ -10,18 +11,17 @@ function generateCodename() {
     return `${prefixes[Math.floor(Math.random() * prefixes.length)]} ${names[Math.floor(Math.random() * names.length)]}`;
 }
 
-// Generate a random 6-digit confirmation code
 function generateConfirmationCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Store confirmation codes in memory (you might want to use Redis in production)
 const pendingDestructions = new Map();
-
 
 router.get('/', auth, async (req, res) => {
     try {
         const where = req.query.status ? { status: req.query.status } : {};
+        // Exclude destroyed gadgets from the results
+        where.status = where.status || { [Op.ne]: 'Destroyed' };
         const gadgets = await Gadget.findAll({ where });
         res.json(gadgets);
     } catch (error) {
@@ -71,26 +71,23 @@ router.delete('/:id', auth, async (req, res) => {
     }
 });
 
-
-// Request confirmation code
 router.post('/:id/request-destruction', auth, async (req, res) => {
     try {
         const gadget = await Gadget.findByPk(req.params.id);
         if (!gadget) {
             return res.status(404).json({ error: 'Gadget not found' });
         }
-        if (gadget.status !== 'Available') {
-            return res.status(400).json({ error: 'Only available gadgets can be destroyed' });
+        // Allow both Available and Decommissioned gadgets to be destroyed
+        if (gadget.status !== 'Available' && gadget.status !== 'Decommissioned') {
+            return res.status(400).json({ error: 'Only available or decommissioned gadgets can be destroyed' });
         }
 
         const confirmationCode = generateConfirmationCode();
-        // Store the code with a 5-minute expiration
         pendingDestructions.set(req.params.id, {
             code: confirmationCode,
-            expires: Date.now() + 5 * 60 * 1000 // 5 minutes
+            expires: Date.now() + 5 * 60 * 1000
         });
 
-        // Clean up expired codes
         setTimeout(() => {
             if (pendingDestructions.has(req.params.id)) {
                 pendingDestructions.delete(req.params.id);
@@ -103,8 +100,6 @@ router.post('/:id/request-destruction', auth, async (req, res) => {
     }
 });
 
-
-// Modified self-destruct endpoint
 router.post('/:id/self-destruct', auth, async (req, res) => {
     try {
         const { confirmationCode } = req.body;
@@ -128,13 +123,11 @@ router.post('/:id/self-destruct', auth, async (req, res) => {
             return res.status(400).json({ error: 'Invalid confirmation code' });
         }
 
-        await gadget.update({
-            status: 'Destroyed',
-            decommissionedAt: new Date()
-        });
+        // Completely delete the gadget from the database
+        await gadget.destroy();
 
         pendingDestructions.delete(req.params.id);
-        res.json({ message: 'Gadget self-destructed successfully' });
+        res.json({ message: 'Gadget self-destructed and removed from database successfully' });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
