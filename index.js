@@ -16,7 +16,8 @@ async function startServer() {
     try {
         await sequelize.sync();
         console.log('Database connected');
-        app.listen(PORT, () => {
+        // Add host/IP binding for Render
+        app.listen(PORT, '0.0.0.0', () => {
             console.log(`Server running on port ${PORT}`);
         });
     } catch (error) {
