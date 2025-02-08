@@ -10,7 +10,7 @@ const app = express();
 
 // CORS configuration
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5173', 'https://yourgithubusername.github.io'],
+    origin: ['http://localhost:3000', 'http://localhost:5176/imf-gadgets-dashboards/', 'https://yadnyeshkolte.github.io/imf-gadgets-dashboards/'],
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
