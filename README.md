@@ -169,7 +169,7 @@ PORT=3000
 CORS_ORIGIN=http://localhost:5176,https://your-frontend-domain.com
 ```
 
-## 🔐 Security Features
+## 🔐 Features
 
 - JWT-based authentication
 - Password hashing using bcrypt
@@ -177,7 +177,6 @@ CORS_ORIGIN=http://localhost:5176,https://your-frontend-domain.com
 - Protected routes using authentication middleware
 - Secure database connection with SSL in production
 
-- ✅ JWT Authentication
 - ✅ Deployment on Render.com
 - ✅ Status-based gadget filtering
 - ✅ Frontend implementation
