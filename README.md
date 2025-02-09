@@ -19,6 +19,7 @@ GET    /gadgets?status={status} - Filter gadgets by status
 POST   /gadgets          - Add new gadget (auto-generates codename)
 PATCH  /gadgets/:id      - Update gadget information
 DELETE /gadgets/:id      - Decommission gadget
+POST   /gadgets/:id/request-destruction - Get the Code
 POST   /gadgets/:id/self-destruct - Initiate gadget self-destruct sequence
 ```
 
@@ -69,7 +70,7 @@ curl -X GET https://imf-gadgets-api-demo.onrender.com/gadgets?status=Available \
 ```
 
 ### API Endpoints Detail
-
+[![Postman](https://img.shields.io/badge/Postman-FF6C37?logo=Postman&logoColor=white)](https://documenter.getpostman.com/view/41932986/2sAYX9kzTN)
 #### Authentication
 
 ##### Register New Agent
